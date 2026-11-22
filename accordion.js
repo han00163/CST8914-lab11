@@ -54,12 +54,6 @@ accordionBtns.forEach((button, index) => {
 
 
 
-
-
-
-
-
-
 // accordionBtns.forEach((accordion) => {
 //   accordion.onclick = function () {
 //     this.classList.toggle("is-open");
