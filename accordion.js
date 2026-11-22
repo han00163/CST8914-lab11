@@ -9,22 +9,71 @@
   6. If the accordion is closed we set the max-height of the currently hidden text inside the accordion from 0 to the scroll height of the content inside the accordion. The scroll height refers to the height of an html element in pixels. For this specific example, we are talking about the height of the div with the class accordion-content with all of its nested ptags
 */
 
-const accordionBtns = document.querySelectorAll(".accordion");
+// const accordionBtns = document.querySelectorAll(".accordion");
+const accordionBtns = Array.from(document.querySelectorAll(".accordion"));
 
-accordionBtns.forEach((accordion) => {
-  accordion.onclick = function () {
-    this.classList.toggle("is-open");
+function setExpanded(button, expand) {
+  const panel = document.getElementById(button.getAttribute("aria-controls"));
+  button.setAttribute("aria-expanded", String(expand)); // announces "expanded"/"collapsed"
+  button.classList.toggle("is-open", expand);            // keeps the visual icon in sync
+  panel.hidden = !expand;                                // removes hidden content from tab order and screen readers
+}
 
-    let content = this.nextElementSibling;
-    console.log(content);
 
-    if (content.style.maxHeight) {
-      //this is if the accordion is open
-      content.style.maxHeight = null;
-    } else {
-      //if the accordion is currently closed
-      content.style.maxHeight = content.scrollHeight + "px";
-      console.log(content.style.maxHeight);
+accordionBtns.forEach((button, index) => {
+  // Enter and Space already work because these are real <button> elements
+  button.addEventListener("click", () => {
+    const isOpen = button.getAttribute("aria-expanded") === "true";
+    setExpanded(button, !isOpen);
+  });
+
+  // Optional APG keys: Down/Up Arrow, Home, End move focus between headers
+  button.addEventListener("keydown", (event) => {
+    let target = null;
+    switch (event.key) {
+      case "ArrowDown":
+        target = accordionBtns[(index + 1) % accordionBtns.length];
+        break;
+      case "ArrowUp":
+        target = accordionBtns[(index - 1 + accordionBtns.length) % accordionBtns.length];
+        break;
+      case "Home":
+        target = accordionBtns[0];
+        break;
+      case "End":
+        target = accordionBtns[accordionBtns.length - 1];
+        break;
+      default:
+        return;
     }
-  };
+    event.preventDefault(); // stop the page from scrolling
+    target.focus();
+  });
 });
+
+
+
+
+
+
+
+
+
+
+// accordionBtns.forEach((accordion) => {
+//   accordion.onclick = function () {
+//     this.classList.toggle("is-open");
+
+//     let content = this.nextElementSibling;
+//     console.log(content);
+
+//     if (content.style.maxHeight) {
+//       //this is if the accordion is open
+//       content.style.maxHeight = null;
+//     } else {
+//       //if the accordion is currently closed
+//       content.style.maxHeight = content.scrollHeight + "px";
+//       console.log(content.style.maxHeight);
+//     }
+//   };
+// });
